@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Musique du club - Pétanque Soullandaise</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center;
+    padding: 20px; box-sizing: border-box; background: #f2f4f6;
+    font-family: Arial, sans-serif; color: #222;
+  }
+  .lecteur {
+    width: min(100%, 430px); box-sizing: border-box; text-align: center;
+    background: #fff; padding: 26px 22px; border: 2px solid #ccc;
+    border-radius: 18px; box-shadow: 0 4px 16px #0002;
+  }
+  h1 { font-size: 22px; margin: 0 0 10px; }
+  .morceau { font-size: 15px; margin: 0 0 22px; color: #555; }
+  button {
+    width: 100%; min-height: 62px; border: 0; border-radius: 13px;
+    color: #fff; background: #198754; font-size: 21px;
+    font-weight: bold; cursor: pointer; padding: 14px;
+  }
+  button.arret { background: #dc3545; }
+  .volume { margin-top: 20px; text-align: left; font-size: 14px; }
+  input[type=range] { width: 100%; margin-top: 10px; }
+  .note { font-size: 13px; line-height: 1.5; color: #555; margin-top: 18px; }
+  audio { display: none; }
+</style>
+</head>
+<body>
+  <main class="lecteur">
+    <h1>🎵 MUSIQUE DU CLUB</h1>
+    <p class="morceau">Pétanque Soullandaise — Sur le Terrain</p>
+
+    <button id="bouton" type="button">▶ MARCHE</button>
+
+    <div class="volume">
+      <label for="volume">Volume : <span id="valeur-volume">25 %</span></label>
+      <input id="volume" type="range" min="0" max="1" step="0.05" value="0.25">
+    </div>
+
+    <p class="note">
+      Laissez cette fenêtre ouverte pendant que vous naviguez sur le site.
+      Si la lecture ne démarre pas, appuyez sur MARCHE.
+    </p>
+
+    <audio id="audio" preload="auto" loop>
+      <source src="/public/9552/upload/files/Mp3/03%20-%20Sur%20le%20Terrain.mp3" type="audio/mpeg">
+      Votre navigateur ne prend pas en charge la lecture audio.
+    </audio>
+  </main>
+
+<script>
+(function () {
+  var audio = document.getElementById('audio');
+  var bouton = document.getElementById('bouton');
+  var volume = document.getElementById('volume');
+  var valeurVolume = document.getElementById('valeur-volume');
+
+  audio.volume = Number(volume.value);
+
+  function afficher(enLecture) {
+    bouton.textContent = enLecture ? '⏹ ARRÊT' : '▶ MARCHE';
+    bouton.classList.toggle('arret', enLecture);
+    bouton.setAttribute('aria-pressed', enLecture ? 'true' : 'false');
+  }
+
+  bouton.addEventListener('click', function () {
+    if (!audio.paused) {
+      audio.pause();
+      audio.currentTime = 0;
+      afficher(false);
+      return;
+    }
+
+    audio.play().then(function () {
+      afficher(true);
+    }).catch(function () {
+      afficher(false);
+      alert("La musique n'a pas pu démarrer. Vérifiez que le fichier MP3 est accessible, puis réessayez.");
+    });
+  });
+
+  volume.addEventListener('input', function () {
+    audio.volume = Number(volume.value);
+    valeurVolume.textContent = Math.round(audio.volume * 100) + ' %';
+  });
+
+  audio.addEventListener('play', function () { afficher(true); });
+  audio.addEventListener('pause', function () { afficher(false); });
+  audio.addEventListener('ended', function () { afficher(false); });
+
+  afficher(false);
+})();
+</script>
+</body>
+</html>
